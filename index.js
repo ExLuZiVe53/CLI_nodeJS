@@ -13,7 +13,7 @@ function invokeAction({ action, fileName, content }) {
       break;
 
     default:
-      console.warn("\x1B[31m Unknown acion type|]");
+      console.warn("\x1B[31m Unknown action type|]");
   }
 }
 
