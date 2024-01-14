@@ -4,6 +4,8 @@ const dataValidate = require("./helpers/dataValidate");
 const chalk = require("chalk");
 const checkExtension = require("./helpers/checkExtension");
 
+const FOLDER_PATH = path.join(__dirname, "./files");
+
 const createFile = async (fileName, content) => {
   const file = { fileName: fileName, content: content };
 
@@ -21,7 +23,37 @@ const createFile = async (fileName, content) => {
         `Sorry this app does't support with files ${extension} extension`
       )
     );
+    return;
+  }
+  const filePath = path.join(__dirname, "./files", fileName);
+
+  try {
+    await fs.writeFile(filePath, content, "utf-8");
+    console.log(chalk.blue.bgGreen.bold(`File is created successfully`));
+  } catch (error) {
+    console.log(error.message);
   }
 };
 
-module.exports = { createFile };
+const getFiles = async () => {
+  const result = await fs.readdir(FOLDER_PATH);
+  if (result.length === 0) {
+    console.log(chalk.bold.red("This folder is empty"));
+    return;
+  }
+  result.forEach((file) => console.log(file));
+};
+
+const getFileInfo = async (fileName) => {
+  const result = await fs.readdir(FOLDER_PATH);
+  if (!result.includes(fileName)) {
+    console.log(chalk.red(`Folder does not contain ${fileName}`));
+    return;
+  }
+
+  const filePath = path.join(FOLDER_PATH, fileName);
+  const fileContent = await fs.readFile(filePath, "utf-8");
+  console.log(chalk.blue(fileContent));
+};
+
+module.exports = { createFile, getFiles, getFileInfo };
