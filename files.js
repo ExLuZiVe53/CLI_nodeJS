@@ -36,24 +36,43 @@ const createFile = async (fileName, content) => {
 };
 
 const getFiles = async () => {
-  const result = await fs.readdir(FOLDER_PATH);
-  if (result.length === 0) {
-    console.log(chalk.bold.red("This folder is empty"));
-    return;
+  try {
+    const result = await fs.readdir(FOLDER_PATH);
+    if (result.length === 0) {
+      console.log(chalk.bold.red("This folder is empty"));
+      return;
+    }
+    result.forEach((file) => console.log(file));
+  } catch (error) {
+    console.log(error);
   }
-  result.forEach((file) => console.log(file));
 };
 
 const getFileInfo = async (fileName) => {
-  const result = await fs.readdir(FOLDER_PATH);
-  if (!result.includes(fileName)) {
-    console.log(chalk.red(`Folder does not contain ${fileName}`));
-    return;
-  }
+  try {
+    const result = await fs.readdir(FOLDER_PATH);
+    if (!result.includes(fileName)) {
+      console.log(chalk.red(`Folder does not contain ${fileName}`));
+      return;
+    }
 
-  const filePath = path.join(FOLDER_PATH, fileName);
-  const fileContent = await fs.readFile(filePath, "utf-8");
-  console.log(chalk.blue(fileContent));
+    const filePath = path.join(FOLDER_PATH, fileName);
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    const { birthtime: createdAt } = await fs.stat(filePath);
+
+    const extension = path.extname(filePath);
+    const nameFile = path.basename(filePath, extension);
+
+    const obj = {
+      fileContent,
+      createdAt,
+      extension,
+      nameFile,
+    };
+    console.log(obj);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = { createFile, getFiles, getFileInfo };
